@@ -12,6 +12,18 @@
 
 ## 运行
 
+* 在线测试框架
+
 ```bash
-python framework.py
+python online_test.py
 ```
+
+* 本地测试框架
+
+  * Lab7 测试
+    
+    测试需要指定Socket服务端地址`host`、端口`port`、测试线程数
+
+    ```bash
+    python local_test.py --lab 7 --test 3 --host 127.0.0.1 --port 6054 --threads 20
+    ```

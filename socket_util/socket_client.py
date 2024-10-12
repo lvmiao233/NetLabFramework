@@ -11,7 +11,6 @@ class SocketClient:
     def connect(self):
         try:
             self.client_socket.connect((self.host, self.port))
-            print(f"Connected to {self.host}:{self.port}")
         except Exception as e:
             raise e
 
@@ -20,7 +19,6 @@ class SocketClient:
         try:
             data = self.client_socket.recv(1024).decode()
             messages.append(data)
-            print(f"Received message: {data}")
         finally:
             self.client_socket.close()
         return messages
