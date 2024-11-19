@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.8/antd.min.css">
+    <style>
+        .form-container {max-width: 300px; margin: 50px auto; padding: 20px; border: 1px solid #d9d9d9; border-radius: 8px;}
+        .form-container h1 {text-align: center;}
+        .form-container img {display: block; margin: 0 auto; width: 100px;}
+        .form-container .ant-input {width: 100%; margin-bottom: 10px; border-radius: 4px;}
+        .form-container .ant-btn {width: 100%; border-radius: 4px;}
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <img src="assets/logo.jpg" alt="Logo">
+    <h1>This is a test</h1>
+    <form action="dopost" method="POST">
+        <label for="login">Login:</label>
+        <input id="login" name="login" class="ant-input">
+        <label for="pass">Pass:</label>
+        <input id="pass" name="pass" type="password" class="ant-input">
+        <button type="submit" class="ant-btn ant-btn-primary">Login</button>
+    </form>
+</div>
+</body>
+</html>

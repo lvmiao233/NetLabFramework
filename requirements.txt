@@ -1,2 +1,4 @@
-Flask
-Flask_Cors
+Flask~=3.0.3
+requests~=2.32.3
+Faker~=33.0.0
+Flask-Cors~=5.0.0

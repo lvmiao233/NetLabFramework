@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
-from socket_util.server_test import server_threading_test
+from utils.server_test import server_threading_test
 from flask_cors import CORS
+import socket,random, string
 
 app = Flask(__name__)
 CORS(app)# 全局启用CORS支持

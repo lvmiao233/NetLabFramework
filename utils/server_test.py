@@ -1,6 +1,7 @@
 import threading
 import queue
-from socket_util import socket_client
+from utils import socket_client
+
 
 def client_emulation(host, port, result_queue):
     try:
@@ -10,6 +11,7 @@ def client_emulation(host, port, result_queue):
         result_queue.put(response)
     except Exception as e:
         result_queue.put(e)
+
 
 def server_threading_test(host, port, num_threads):
     results_queue = queue.Queue()

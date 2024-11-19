@@ -1,5 +1,5 @@
 import argparse
-from socket_util.server_test import server_threading_test
+from utils.server_test import server_threading_test
 
 
 # Lab7 Test 1 / 3
@@ -10,12 +10,13 @@ def lab7_server(host, port, num_threads):
     fail_cnt = num_threads - success_cnt - timeout_cnt
 
     if timeout_cnt or fail_cnt:
-        print( 'Lab7 Test Failed')
+        print('Lab7 Test Failed')
         print(f'Success: {success_cnt} Threads')
         print(f'Connect Failed: {fail_cnt} Threads')
         print(f'Time Limit Exceed: {timeout_cnt} Threads')
     else:
         print('Lab7 Test Passed')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run specified lab tests.')
