@@ -3,7 +3,7 @@ from faker import Faker
 from requests.structures import CaseInsensitiveDict
 from typing import Dict, Tuple, Any
 
-from utils.http_utils import HttpResponse, HttpRequest
+from data_model import HttpResponse, HttpRequest
 
 fake = Faker()
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     # Generate and print a random HTTP response
     http_response_obj, http_response_text = generate_http_response()
-    http_response_obj.set_body_from_file("../lab_assets/txt/test.txt")
+    http_response_obj.set_body_from_file("../assets/txt/test.txt")
     print("\nGenerated HTTP Response:\n", http_response_text, sep="")
     print("Dataclass HTTP Response:\n", http_response_obj.to_string(), sep="")
 

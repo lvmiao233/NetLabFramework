@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 import concurrent.futures
-from test_status import Status
-from test_case import Case
+from .test_status import Status
+from .test_case import Case
 
 
 @dataclass
@@ -14,11 +14,13 @@ class Test:
     params: Optional[dict] = None
 
     def add_case(self, case: Case) -> None:
-        if self.params:
-            case.params = self.params
         self.cases.append(case)
 
     def run_all_cases(self, parallel: bool = True) -> None:
+        # 同步全局参数到每个用例
+        if self.params:
+            for case in self.cases:
+                case.params = self.params
         if parallel:
             # 运行所有用例，并行执行各个用例
             with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -31,8 +33,10 @@ class Test:
 
     def to_dict(self) -> dict:
         return {
-            "success_count": sum(1 for case in self.cases if case.status == Status.AC),
-            "total_count": len(self.cases),
+            "success_cnt": sum(1 for case in self.cases if case.status == Status.AC),
+            "timeout_cnt": sum(1 for case in self.cases if case.status == Status.TLE),
+            "error_cnt": sum(1 for case in self.cases if case.status == Status.RE),
+            "total_cnt": len(self.cases),
             "cases": [
                 {
                     "index": case.index,

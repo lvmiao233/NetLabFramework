@@ -1,35 +1,92 @@
 from flask import Flask, request, jsonify
-from utils.server_test import server_threading_test
+from tests.lab7.socket_server import server_threading_test, server_standalone_test
 from flask_cors import CORS
-import socket,random, string
+import ipaddress
 
 app = Flask(__name__)
-CORS(app)# 全局启用CORS支持
+CORS(app)  # 全局启用CORS支持
 
 
-@app.route('/test/lab7/server', methods=['POST', 'OPTIONS'])
-def lab7_server():
-    # 解析测试参数
+def extract_valid_params():
     if request.method == 'OPTIONS':  # 处理跨域预检请求
-        return '', 204  # 返回204 No Content
+        return None, 204
+
     data = request.get_json()
+    if not data or 'host' not in data:
+        return {"error": "Params Missing"}, 400
     host, port = data.get('host').split(':')
     num_threads = data.get('num_threads', 1)
     if not host or not port:
-        return jsonify({"error": "params"}), 400
-    num_threads = int(num_threads)
+        return {"error": "Params Missing"}, 400
 
-    # 执行测试
-    results = server_threading_test(host, port, num_threads)
-    response = [
-        [i, "TLE" if str(result) == "timed out" else "RE" if isinstance(result, Exception) else ''.join(result)]
-        for i, result in enumerate(results)
-    ]
-    success_count = sum(1 for result in results if not isinstance(result, Exception))
-    state = "fail" if success_count != num_threads else "none"
+    try:
+        ipaddress.ip_address(host)  # 验证 host 是否为有效 IP 地址
+    except ValueError:
+        return {"error": "Invalid IP Address"}, 400
+    try:
+        port = int(port)
+        if port < 1 or port > 65535:
+            return {"error": "Invalid Port Number"}, 400
+    except ValueError:
+        return {"error": "Invalid Port Number"}, 400
 
-    # 返回结果
-    return jsonify({"error": state, "cnt": success_count, "response": response})
+    return (host, port, int(num_threads)), 200
+
+
+@app.route('/test/lab7/standalone', methods=['POST', 'OPTIONS'])
+def lab7_test1_standalone():
+    result, status_code = extract_valid_params()
+    if status_code != 200:
+        return jsonify(result), status_code
+    host, port, _ = result
+
+    test = server_standalone_test(host, int(port))
+    test.run_all_cases()
+    return test.to_dict()
+
+
+@app.route('/test/lab7/threaded', methods=['POST', 'OPTIONS'])
+def lab7_test3_threaded():
+    result, status_code = extract_valid_params()
+    if status_code != 200:
+        return jsonify(result), status_code
+    host, port, num_threads = result
+
+    test = server_threading_test(host, int(port), num_threads)
+    test.run_all_cases()
+    return test.to_dict()
+
+
+@app.route('/test/lab8/structure-parse', methods=['POST', 'OPTIONS'])
+def lab8_test2_structure_parse():
+    result, status_code = extract_valid_params()
+    if status_code != 200:
+        return jsonify(result), status_code
+    host, port, _ = result
+
+
+@app.route('/test/lab8/web-echo', methods=['POST', 'OPTIONS'])
+def lab8_test3_web_echo():
+    result, status_code = extract_valid_params()
+    if status_code != 200:
+        return jsonify(result), status_code
+    host, port, _ = result
+
+
+@app.route('/test/lab8/uri-mapping', methods=['POST', 'OPTIONS'])
+def lab8_test4_uri_mapping():
+    result, status_code = extract_valid_params()
+    if status_code != 200:
+        return jsonify(result), status_code
+    host, port, _ = result
+
+
+@app.route('/test/lab8/resource-retrieve', methods=['POST', 'OPTIONS'])
+def lab8_test5_resource_retrieve():
+    result, status_code = extract_valid_params()
+    if status_code != 200:
+        return jsonify(result), status_code
+    host, port, _ = result
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Callable
 import time
 import threading
-from test_status import Status
+from .test_status import Status
 
 
 @dataclass
@@ -37,7 +37,7 @@ class Case:
         except Exception as e:
             self.status = Status.RE
 
-    def update_status(self, status: Status, time: Optional[float] = None) -> None:
+    def update_status(self, status: Status, run_time: Optional[float] = None) -> None:
         self.status = status
-        if time is not None:
-            self.time = time
+        if run_time is not None:
+            self.time = run_time

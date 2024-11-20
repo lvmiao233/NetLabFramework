@@ -25,5 +25,8 @@ python online_test.py
     测试需要指定Socket服务端地址`host`、端口`port`、测试线程数
 
     ```bash
+    # 测试 1
+    python local_test.py --lab 7 --test 1 --host 127.0.0.1 --port 6054
+    # 测试 3
     python local_test.py --lab 7 --test 3 --host 127.0.0.1 --port 6054 --threads 20
     ```

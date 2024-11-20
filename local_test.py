@@ -1,19 +1,18 @@
 import argparse
-from utils.server_test import server_threading_test
+from tests.lab7.socket_server import server_threading_test, server_standalone_test
 
 
 # Lab7 Test 1 / 3
 def lab7_server(host, port, num_threads):
-    results = server_threading_test(host, port, num_threads)
-    timeout_cnt = sum(1 for result in results if isinstance(result, Exception) and str(result) == "timed out")
-    success_cnt = sum(1 for result in results if not isinstance(result, Exception))
-    fail_cnt = num_threads - success_cnt - timeout_cnt
+    test = server_threading_test(host, port, num_threads) if num_threads > 1 else server_standalone_test(host, port)
+    test.run_all_cases()
+    results = test.to_dict()
 
-    if timeout_cnt or fail_cnt:
+    if results['success_cnt'] != results['total_cnt']:
         print('Lab7 Test Failed')
-        print(f'Success: {success_cnt} Threads')
-        print(f'Connect Failed: {fail_cnt} Threads')
-        print(f'Time Limit Exceed: {timeout_cnt} Threads')
+        print(f'Success: {results["success_cnt"]} Threads')
+        print(f'Connect Failed: {results["error_cnt"]} Threads')
+        print(f'Time Limit Exceed: {results["timeout_cnt"]} Threads')
     else:
         print('Lab7 Test Passed')
 

@@ -163,5 +163,5 @@ if __name__ == "__main__":
 
     # Generate and print a random HTTP response
     http_response_obj = HttpResponse("HTTP/1.1", "200 OK")
-    http_response_obj.set_body_from_file("../lab_assets/txt/test.txt")
+    http_response_obj.set_body_from_file("../assets/txt/test.txt")
     print("Dataclass HTTP Response:\n", http_response_obj.to_string(), sep="")
