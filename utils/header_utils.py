@@ -95,7 +95,7 @@ def generate_http_request(method = None, uri = None, body: bool = False) -> Tupl
         request_body = ''.join(random.choices(string.ascii_letters + string.digits, k=body_length))
 
         # 设置 Content-Length 和 Content-Type 头
-        headers["Content-Length"] = len(request_body)
+        headers["Content-Length"] = str(len(request_body))
         headers["Content-Type"] = "text/plain"
     else:
         # 移除 Content-Length 和 Content-Type 头

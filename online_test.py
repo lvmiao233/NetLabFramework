@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import ipaddress
 from tests.lab7.socket_server import server_threading_test, server_standalone_test
+from tests.lab8.resource_retrieve import resource_retrieve_test
 from tests.lab8.structure_parse import structure_parse_test
 from tests.lab8.uri_mapping import uri_mapping_test
 from tests.lab8.web_echo import web_echo_test
@@ -102,6 +103,10 @@ def lab8_test5_resource_retrieve():
     if status_code != 200:
         return jsonify(result), status_code
     host, port, _ = result
+
+    test = resource_retrieve_test(host, int(port))
+    test.run_all_cases()
+    return test.to_dict()
 
 
 if __name__ == '__main__':

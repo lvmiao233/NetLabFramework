@@ -9,6 +9,9 @@ def random_structure_match(host, port):
         return send_state
 
     response_obj = HttpResponse.parse(response)
+    if isinstance(response_obj.body, bytes):
+        response_obj.body = response_obj.body.decode()
+
     if response_obj.version != "HTTP/1.0" or response_obj.status != "200 OK":
         return Status.WA
     expected_body = ''.join([f"{k}: {v}" for k, v in request_obj.headers.items()]).replace("\r\n", "") + \

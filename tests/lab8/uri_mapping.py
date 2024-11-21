@@ -6,15 +6,14 @@ from faker import Faker
 
 fake = Faker()
 
+
 def uri_match(host, port, external_uri, internal_uri):
     request_obj, request_text = generate_http_request(method="GET", uri=external_uri)
-    print(request_obj)
     response, send_state = request_for_response(host, port, request_text)
     if send_state != Status.AC:
         return send_state
 
     response_obj = HttpResponse.parse(response)
-    print(response_obj)
     if internal_uri is None:
         return Status.AC if response_obj.status == "404 Not Found" else Status.WA
 
@@ -25,9 +24,9 @@ def uri_match(host, port, external_uri, internal_uri):
     expected_headers['Content-Length'] = str(len(internal_uri))
 
     expected_obj = HttpResponse(version="HTTP/1.0", status="200 OK", headers=expected_headers, body=internal_uri)
-    print(expected_obj)
 
     return Status.AC if expected_obj.weak_match(response_obj) else Status.WA
+
 
 def post_match(host, port, external_uri, internal_uri):
     request_obj, request_text = generate_http_request(method="POST", uri=external_uri, body=True)
@@ -40,6 +39,7 @@ def post_match(host, port, external_uri, internal_uri):
         return Status.AC if response_obj.status == "404 Not Found" else Status.WA
     else:
         return Status.AC if response_obj.status == "200 OK" else Status.WA
+
 
 def uri_mapping_test(host, port) -> Test:
     # 定义固定的路径映射关系

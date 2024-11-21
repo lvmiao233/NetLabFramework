@@ -3,6 +3,7 @@ from typing import Optional, Union
 import mimetypes
 from requests.structures import CaseInsensitiveDict
 from email.parser import Parser
+import os
 
 
 # Dataclass for HTTP Request
@@ -95,13 +96,19 @@ class HttpResponse:
 
     def set_body_from_file(self, file_path: str) -> None:
         """Set the body from the contents of a file and set Content-Type based on the file type."""
-        with open(file_path, 'rb') as f:
+        current_dir = os.getcwd()
+        full_path = os.path.join(current_dir, os.path.normpath(file_path))
+        with open(full_path, 'rb') as f:
             self.body = f.read()
         content_type, _ = mimetypes.guess_type(file_path)
         if content_type:
             self.set_header('Content-Type', content_type)
+            if content_type.startswith('text/') or content_type.endswith('+xml') or content_type.startswith('application/json'):
+                # Text content, decode to string
+                self.body = self.body.decode()
         else:
             self.set_header('Content-Type', 'application/octet-stream')
+        self.set_header('Content-Length', str(len(self.body)))
 
     def to_string(self) -> str:
         response_line = f"{self.version} {self.status}".strip()
@@ -130,18 +137,17 @@ class HttpResponse:
         )
 
     @classmethod
-    def parse(cls, response_text: str) -> 'HttpResponse':
+    def parse(cls, response_text) -> 'HttpResponse':
+        if isinstance(response_text, str):
+            # If input is a string, encode it to bytes
+            response_text = response_text.encode('utf-8')
+
         # Split the response into header and body
-        headers, _, body = response_text.partition('\r\n\r\n')
-        header_lines = headers.split('\r\n')  # CRLF
-        if len(body) == 0:
-            body = None
-
-        # Extract the status line from header lines
-        status_line = header_lines[0]
-
-        # Join the remaining header lines (using CRLF as separator)
-        header_content = '\r\n'.join(header_lines[1:])  # CRLF
+        headers, _, body_bytes = response_text.partition(b'\r\n\r\n')
+        header_lines = headers.split(b'\r\n')  # CRLF
+        status_line = header_lines[0].decode('ascii')
+        # Remaining header lines
+        header_content = b'\r\n'.join(header_lines[1:]).decode('ascii')
 
         # Parse the status line to extract version and status
         version, status = status_line.split(' ', 1)
@@ -149,6 +155,21 @@ class HttpResponse:
         # Use email.parser to parse the headers
         parser = Parser()
         headers_dict = CaseInsensitiveDict(parser.parsestr(header_content).items())
+
+        # Handle Content-Length
+        content_length = headers_dict.get('Content-Length')
+        if content_length:
+            content_length = int(content_length)
+            body_bytes = body_bytes[:content_length]
+
+        # Determine the content type and handle the body accordingly
+        content_type = headers_dict.get('Content-Type', '')
+        if content_type.startswith('text/') or content_type.endswith('+xml') or content_type.startswith('application/json'):
+            # Text content, decode to string
+            body = body_bytes.decode(headers_dict.get('Content-Encoding', 'utf-8'))
+        else:
+            # Binary content, keep as bytes
+            body = body_bytes
 
         return cls(version=version, status=status, headers=headers_dict, body=body)
 
