@@ -3,7 +3,8 @@ from typing import List, Optional
 import concurrent.futures
 from .test_status import Status
 from .test_case import Case
-
+import tabulate
+from termcolor import colored
 
 @dataclass
 class Test:
@@ -50,3 +51,38 @@ class Test:
                 } for case in self.cases
             ]
         }
+
+    def print_results(self):
+        status_colors = {
+            Status.AC: "green",
+            Status.RE: "red",
+            Status.TLE: "yellow",
+            Status.WA: "red"
+        }
+        status_desc = {
+            Status.AC: "Pass",
+            Status.RE: "Runtime Error",
+            Status.TLE: "Time Limit Exceeded",
+            Status.WA: "Wrong Response"
+        }
+        headers = ["Index", "Name", "Status", "Time (ms)"]
+        data = []
+        for case in self.cases:
+            if case.time is None:
+                time_str = "N/A"
+            else:
+                time_ms = case.time * 1000
+                if time_ms >= 1000:
+                    time_str = f"{int(time_ms)} ms"
+                elif time_ms >= 100:
+                    time_str = f"{time_ms:.1f} ms"
+                elif time_ms >= 10:
+                    time_str = f"{time_ms:.2f} ms"
+                else:
+                    time_str = f"{time_ms:.3f} ms"
+            name = case.name if case.name is not None else ""
+            status_color = status_colors.get(case.status, "white")
+            status_str = colored(status_desc[case.status], status_color)
+            data.append([case.index, name, status_str, time_str])
+        table = tabulate.tabulate(data, headers=headers, tablefmt="pretty")
+        print(table)

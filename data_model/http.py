@@ -176,7 +176,7 @@ class HttpResponse:
 
 if __name__ == "__main__":
     # Generate and print a random HTTP request
-    http_request_obj = HttpRequest("GET", "/", "HTTP/1.1")
+    http_request_obj = HttpRequest("GET", "/", "HTTP/1.0")
     http_request_text = http_request_obj.to_string()
     print("Dataclass HTTP Request:\n", http_request_obj, sep="")
 
@@ -186,6 +186,6 @@ if __name__ == "__main__":
     print("Equal: ", parsed_request == http_request_obj)
 
     # Generate and print a random HTTP response
-    http_response_obj = HttpResponse("HTTP/1.1", "200 OK")
+    http_response_obj = HttpResponse("HTTP/1.0", "200 OK")
     http_response_obj.set_body_from_file("../assets/txt/test.txt")
     print("Dataclass HTTP Response:\n", http_response_obj.to_string(), sep="")

@@ -8,7 +8,7 @@
 > 
 > 请按照实验要求，完成Lab7-8的代码编写
 
-框架目前仍在调试改进中，测试中遇到问题请提交issue/钉钉反馈，谢谢！
+框架目前仍在调试改进中，测试中遇到问题欢迎提交issue/钉钉反馈，谢谢！
 
 ## 运行
 
@@ -34,3 +34,13 @@ python online_test.py
 #### Lab8 测试
     
   测试需要指定Web服务端地址`host`、端口`port`
+  ```bash
+  # 测试 2
+  python local_test.py --lab 8 --test 2 --host 127.0.0.1 --port 6052
+  # 测试 3
+  python local_test.py --lab 8 --test 3 --host 127.0.0.1 --port 6053
+  # 测试 4
+  python local_test.py --lab 8 --test 4 --host 127.0.0.1 --port 6054
+  # 测试 5
+  python local_test.py --lab 8 --test 5 --host 127.0.0.1 --port 6055
+  ```

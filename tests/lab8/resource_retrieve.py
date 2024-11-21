@@ -16,7 +16,7 @@ def resource_match(host, port, external_uri, internal_uri):
 
     if response_obj.status != "200 OK":
         return Status.WA
-    expected_obj = HttpResponse(version="HTTP/1.1", status="200 OK", body=internal_uri)
+    expected_obj = HttpResponse(version="HTTP/1.0", status="200 OK", body=internal_uri)
     expected_obj.set_body_from_file("assets" + internal_uri)
 
     return Status.AC if expected_obj.weak_match(response_obj) else Status.WA

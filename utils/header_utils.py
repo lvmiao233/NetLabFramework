@@ -85,7 +85,7 @@ def generate_http_request(method = None, uri = None, body: bool = False) -> Tupl
         method = random.choice(["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH", "CONNECT", "TRACE"])
     if not uri:
         uri = '/' + fake.uri_path()
-    version = "HTTP/1.1"
+    version = "HTTP/1.0"
     request_line = f"{method} {uri} {version}\r\n"
     headers = random_http_request_headers()
     request_body = ""
@@ -107,7 +107,7 @@ def generate_http_request(method = None, uri = None, body: bool = False) -> Tupl
 
 # Function to generate an HTTP response
 def generate_http_response() -> Tuple[HttpResponse, str]:
-    version = "HTTP/1.1"
+    version = "HTTP/1.0"
     status_code = random.choice(["200 OK", "404 Not Found", "500 Internal Server Error", "301 Moved Permanently"])
     response_line = f"{version} {status_code}\r\n"
     headers = random_http_response_headers()
