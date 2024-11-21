@@ -14,6 +14,12 @@ class SocketClient:
         except Exception as e:
             raise e
 
+    def send_message(self, message):
+        try:
+            self.client_socket.sendall(message.encode())
+        except Exception as e:
+            raise e
+
     def receive_messages(self):
         messages = []
         try:

@@ -30,6 +30,9 @@ class HttpRequest:
         body_str = f"{self.body}" if self.body else ""
         return request_line + "\r\n" + headers_str + "\r\n" + body_str
 
+    def body_to_string(self) -> str:
+        return f"{self.body}" if self.body else ""
+
     def __eq__(self, other) -> bool:
         return (
                 self.method == other.method and

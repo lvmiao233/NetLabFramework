@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
-from tests.lab7.socket_server import server_threading_test, server_standalone_test
 from flask_cors import CORS
 import ipaddress
+from tests.lab7.socket_server import server_threading_test, server_standalone_test
+from tests.lab8.structure_parse import structure_parse_test
 
 app = Flask(__name__)
 CORS(app)  # 全局启用CORS支持
@@ -63,6 +64,10 @@ def lab8_test2_structure_parse():
     if status_code != 200:
         return jsonify(result), status_code
     host, port, _ = result
+
+    test = structure_parse_test(host, int(port))
+    test.run_all_cases()
+    return test.to_dict()
 
 
 @app.route('/test/lab8/web-echo', methods=['POST', 'OPTIONS'])
