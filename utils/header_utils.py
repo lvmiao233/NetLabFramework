@@ -1,4 +1,4 @@
-import random
+import random, string
 from faker import Faker
 from requests.structures import CaseInsensitiveDict
 from typing import Dict, Tuple, Any
@@ -80,14 +80,23 @@ def random_http_response_headers() -> CaseInsensitiveDict:
 
 
 # Function to generate a random HTTP request line
-def generate_http_request() -> Tuple[HttpRequest, str]:
+def generate_http_request(body: bool = False) -> Tuple[HttpRequest, str]:
     method = random.choice(["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH", "CONNECT", "TRACE"])
     uri = '/' + fake.uri_path()
     version = "HTTP/1.1"
     request_line = f"{method} {uri} {version}\r\n"
     headers = random_http_request_headers()
+    request_body = ""
+    if body:
+        # 生成随机长度的请求体
+        body_length = random.randint(10, 100)  # 生成 10 到 100 个字符的请求体
+        request_body = ''.join(random.choices(string.ascii_letters + string.digits, k=body_length))
+
+        # 设置 Content-Length 和 Content-Type 头
+        headers["Content-Length"] = str(len(request_body))
+        headers["Content-Type"] = "text/plain"
     headers_str = ''.join([f"{k}: {v}\r\n" for k, v in headers.items()])
-    return HttpRequest(method=method, uri=uri, version=version, headers=headers), request_line + headers_str + "\r\n"
+    return HttpRequest(method=method, uri=uri, version=version, headers=headers, body=None if not body else request_body), request_line + headers_str + "\r\n" + request_body
 
 
 # Function to generate an HTTP response

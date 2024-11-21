@@ -4,7 +4,6 @@ from utils import generate_http_request, socket_client, decode_probe
 
 def random_structure_match(host, port):
     request_obj, request_text = generate_http_request()
-    print(request_obj)
     response = ""
     try:
         client = socket_client.SocketClient(host, port)
@@ -12,7 +11,6 @@ def random_structure_match(host, port):
         client.send_message(request_text)
         responses = client.receive_messages()
         response = ''.join(responses)
-        print(response)
     except Exception as e:
         return Status.TLE if str(e) == "timed out" else Status.RE
 
