@@ -6,7 +6,7 @@ class SocketClient:
         self.host = host
         self.port = port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.settimeout(0.5)
+        self.client_socket.settimeout(timeout)
 
     def connect(self):
         try:
@@ -44,7 +44,7 @@ class SocketClient:
 def request_for_response(host, port, request_text, timeout=0.5, byte_encode=False):
     response = ""
     try:
-        client = SocketClient(host, port)
+        client = SocketClient(host, port, timeout=timeout)
         client.connect()
         client.send_message(request_text)
         responses = client.receive_messages()
