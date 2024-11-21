@@ -6,7 +6,7 @@ def client_emulation(host, port) -> Status:
     try:
         client = socket_client.SocketClient(host, port)
         client.connect()
-        client.receive_messages()
+        client.receive_onetime_messages()
         return Status.AC
     except Exception as e:
         return Status.TLE if str(e) == "timed out" else Status.RE

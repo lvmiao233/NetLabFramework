@@ -20,14 +20,14 @@ class SocketClient:
         except Exception as e:
             raise e
 
-    # def receive_messages(self):
-    #     messages = []
-    #     try:
-    #         data = self.client_socket.recv(1024).decode()
-    #         messages.append(data)
-    #     finally:
-    #         self.client_socket.close()
-    #     return messages
+    def receive_onetime_messages(self):
+        messages = []
+        try:
+            data = self.client_socket.recv(1024).decode()
+            messages.append(data)
+        finally:
+            self.client_socket.close()
+        return messages
 
     def receive_messages(self):
         buffer = []
