@@ -80,9 +80,11 @@ def random_http_response_headers() -> CaseInsensitiveDict:
 
 
 # Function to generate a random HTTP request line
-def generate_http_request(body: bool = False) -> Tuple[HttpRequest, str]:
-    method = random.choice(["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH", "CONNECT", "TRACE"])
-    uri = '/' + fake.uri_path()
+def generate_http_request(method = None, uri = None, body: bool = False) -> Tuple[HttpRequest, str]:
+    if not method:
+        method = random.choice(["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH", "CONNECT", "TRACE"])
+    if not uri:
+        uri = '/' + fake.uri_path()
     version = "HTTP/1.1"
     request_line = f"{method} {uri} {version}\r\n"
     headers = random_http_request_headers()
@@ -93,8 +95,12 @@ def generate_http_request(body: bool = False) -> Tuple[HttpRequest, str]:
         request_body = ''.join(random.choices(string.ascii_letters + string.digits, k=body_length))
 
         # 设置 Content-Length 和 Content-Type 头
-        headers["Content-Length"] = str(len(request_body))
+        headers["Content-Length"] = len(request_body)
         headers["Content-Type"] = "text/plain"
+    else:
+        # 移除 Content-Length 和 Content-Type 头
+        headers.pop("Content-Length", None)
+        headers.pop("Content-Type", None)
     headers_str = ''.join([f"{k}: {v}\r\n" for k, v in headers.items()])
     return HttpRequest(method=method, uri=uri, version=version, headers=headers, body=None if not body else request_body), request_line + headers_str + "\r\n" + request_body
 

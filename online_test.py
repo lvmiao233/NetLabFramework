@@ -3,6 +3,7 @@ from flask_cors import CORS
 import ipaddress
 from tests.lab7.socket_server import server_threading_test, server_standalone_test
 from tests.lab8.structure_parse import structure_parse_test
+from tests.lab8.uri_mapping import uri_mapping_test
 from tests.lab8.web_echo import web_echo_test
 
 app = Flask(__name__)
@@ -89,6 +90,10 @@ def lab8_test4_uri_mapping():
     if status_code != 200:
         return jsonify(result), status_code
     host, port, _ = result
+
+    test = uri_mapping_test(host, int(port))
+    test.run_all_cases()
+    return test.to_dict()
 
 
 @app.route('/test/lab8/resource-retrieve', methods=['POST', 'OPTIONS'])
