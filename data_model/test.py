@@ -12,6 +12,7 @@ class Test:
     """
     cases: List[Case] = field(default_factory=list)
     params: Optional[dict] = None
+    timeout: Optional[float] = None  # 默认超时时间，单位：秒
 
     def add_case(self, case: Case) -> None:
         self.cases.append(case)
@@ -21,6 +22,9 @@ class Test:
         if self.params:
             for case in self.cases:
                 case.params = self.params
+        if self.timeout:
+            for case in self.cases:
+                case.timeout = self.timeout
         if parallel:
             # 运行所有用例，并行执行各个用例
             with concurrent.futures.ThreadPoolExecutor() as executor:

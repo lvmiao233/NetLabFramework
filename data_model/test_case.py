@@ -16,7 +16,7 @@ class Case:
     name: Optional[str] = None
     run_function: Optional[Callable[..., Status]] = None
     params: Optional[dict] = None
-    timeout: float = 5.0  # 默认超时时间，单位：秒
+    timeout: float = 0.5  # 默认超时时间，单位：秒
 
     def run(self) -> None:
         if self.run_function:
