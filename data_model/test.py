@@ -14,27 +14,33 @@ class Test:
     cases: List[Case] = field(default_factory=list)
     params: Optional[dict] = None
     timeout: Optional[float] = None  # 默认超时时间，单位：秒
+    duplicate: int = 1
 
     def add_case(self, case: Case) -> None:
         self.cases.append(case)
 
     def run_all_cases(self, parallel: bool = True) -> None:
-        # 同步全局参数到每个用例
+        # 同步全局参数到每个用例，以 case 内的 params 为准
         if self.params:
             for case in self.cases:
-                case.params = self.params
+                new_params = self.params.copy()
+                if case.params:
+                    new_params.update(case.params)
+                case.params = new_params
         if self.timeout:
             for case in self.cases:
                 case.timeout = self.timeout
         if parallel:
             # 运行所有用例，并行执行各个用例
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [executor.submit(case.run) for case in self.cases]
-                concurrent.futures.wait(futures)
+                for i in range(self.duplicate):
+                    futures = [executor.submit(case.run) for case in self.cases]
+                    concurrent.futures.wait(futures)
         else:
             # 顺序运行所有用例
             for case in self.cases:
-                case.run()
+                for i in range(self.duplicate):
+                    case.run()
 
     def to_dict(self) -> dict:
         return {

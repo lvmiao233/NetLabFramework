@@ -44,3 +44,9 @@ python online_test.py
   # 测试 5
   python local_test.py --lab 8 --test 5 --host 127.0.0.1 --port 6055
   ```
+
+### Q & A
+
+* 我的电脑上，测试时无论如何都会超时，该如何解决？
+  * 如果你的电脑性能受限，导致计算速度过慢，请尝试增加`utils/socket_client.py`、`data_model/test_case.py`中超时时间，观察是否解决
+  * 如果不存在性能问题，请检查代码实现是否存在问题

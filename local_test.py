@@ -10,7 +10,7 @@ def run_and_summary(test_instance, test_title):
     if results['success_cnt'] != results['total_cnt']:
         print(f'{test_title} Test Failed')
         print(f'Success: {results["success_cnt"]} Threads')
-        print(f'Connect Failed: {results["error_cnt"]} Threads')
+        print(f'Runtime Error: {results["error_cnt"]} Threads')
         print(f'Time Limit Exceed: {results["timeout_cnt"]} Threads')
     else:
         print(f'{test_title} Test Passed')

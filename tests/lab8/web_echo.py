@@ -7,20 +7,17 @@ def random_content_match(host, port):
     response, send_state = request_for_response(host, port, request_text)
     if send_state != Status.AC:
         return send_state
-
-    response_obj = HttpResponse.parse(response)
-    if response_obj.version != "HTTP/1.0" or response_obj.status != "200 OK":
+    if response.version != "HTTP/1.0" or response.status != "200 OK":
         return Status.WA
 
     expected_obj = HttpResponse(version="HTTP/1.0", status="200 OK", headers=request_obj.headers, body=request_obj.body)
 
-    return Status.AC if response_obj.weak_match(expected_obj) else Status.WA
+    return Status.AC if response.weak_match(expected_obj) else Status.WA
 
 
 def web_echo_test(host, port) -> Test:
     cases = [
-        Case(index=i + 1, name=f"随机请求 {i + 1}", run_function=random_content_match,
-             params={"host": host, "port": port})
+        Case(index=i + 1, name=f"随机请求 {i + 1}", run_function=random_content_match)
         for i in range(int(20))
     ]
-    return Test(cases=cases)
+    return Test(cases=cases, params={"host": host, "port": port})

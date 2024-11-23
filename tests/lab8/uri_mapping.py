@@ -13,11 +13,10 @@ def uri_match(host, port, external_uri, internal_uri):
     if send_state != Status.AC:
         return send_state
 
-    response_obj = HttpResponse.parse(response)
     if internal_uri is None:
-        return Status.AC if response_obj.status == "404 Not Found" else Status.WA
+        return Status.AC if response.status == "404 Not Found" else Status.WA
 
-    if response_obj.status != "200 OK":
+    if response.status != "200 OK":
         return Status.WA
     expected_headers = CaseInsensitiveDict()
     expected_headers['Content-Type'] = "text/plain"
@@ -25,20 +24,19 @@ def uri_match(host, port, external_uri, internal_uri):
 
     expected_obj = HttpResponse(version="HTTP/1.0", status="200 OK", headers=expected_headers, body=internal_uri)
 
-    return Status.AC if expected_obj.weak_match(response_obj) else Status.WA
+    return Status.AC if expected_obj.weak_match(response) else Status.WA
 
 
-def post_match(host, port, external_uri, internal_uri):
-    request_obj, request_text = generate_http_request(method="POST", uri=external_uri, body=True)
+def post_match(host, port, external_uri, internal_uri, body):
+    request_obj, request_text = generate_http_request(method="POST", uri=external_uri, body=body)
     response, send_state = request_for_response(host, port, request_text)
     if send_state != Status.AC:
         return send_state
 
-    response_obj = HttpResponse.parse(response)
     if internal_uri is None:
-        return Status.AC if response_obj.status == "404 Not Found" else Status.WA
+        return Status.AC if response.status == "404 Not Found" else Status.WA
     else:
-        return Status.AC if response_obj.status == "200 OK" else Status.WA
+        return Status.AC if response.status == "200 OK" else Status.WA
 
 
 def uri_mapping_test(host, port) -> Test:
@@ -53,22 +51,27 @@ def uri_mapping_test(host, port) -> Test:
     # 生成固定映射关系的测试用例
     fixed_cases = [
         Case(index=i + 1, name=f"{internal_uri}映射", run_function=uri_match,
-             params={"host": host, "port": port, "external_uri": external_uri, "internal_uri": internal_uri})
+             params={"external_uri": external_uri, "internal_uri": internal_uri})
         for i, (internal_uri, external_uri) in enumerate(fixed_mappings.items())
     ] + [
-        Case(index=len(fixed_mappings) + 1, name=f"错误POST URI", run_function=post_match,
-             params={"host": host, "port": port, "external_uri": fake.uri(), "internal_uri": None}),
-        Case(index=len(fixed_mappings) + 2, name=f"登录POST URI", run_function=post_match,
-             params={"host": host, "port": port, "external_uri": '/dopost', "internal_uri": '/dopost'})
+        Case(index=len(fixed_mappings) + 2, name=f"正确登录URI 空正文", run_function=post_match,
+             params={"external_uri": '/dopost', "internal_uri": '/dopost', "body": False}), 
+        Case(index=len(fixed_mappings) + 3, name=f"正确登录URI 随机正文", run_function=post_match,
+             params={"external_uri": '/dopost', "internal_uri": '/dopost', "body": True})
     ]
 
-    # 生成随机的 external_uri 用例
+    # 生成随机的 错误 external_uri 用例
     random_cases = [
-        Case(index=i + len(fixed_mappings) + 3, name=f"随机不存在 URI {i + 1}", run_function=uri_match,
-             params={"host": host, "port": port, "external_uri": fake.uri(), "internal_uri": None})
-        for i in range(len(fixed_mappings))  # 生成 10 个随机用例
+        Case(index=len(fixed_mappings) + 4, name=f"错误登录URI 空正文", run_function=post_match,
+             params={"external_uri": fake.uri(), "body": False}),
+        Case(index=len(fixed_mappings) + 5, name=f"错误登录URI 随机正文", run_function=post_match,
+             params={"external_uri": fake.uri(), "body": True})
+    ] + [
+        Case(index=i + len(fixed_mappings) + 6, name=f"随机不存在 URI {i + 1}", run_function=uri_match,
+             params={"external_uri": fake.uri()})
+        for i in range(len(fixed_mappings))
     ]
 
     # 合并所有用例
     cases = fixed_cases + random_cases
-    return Test(cases=cases)
+    return Test(cases=cases, duplicate=5, params={"host": host, "port": port, "internal_uri": None})

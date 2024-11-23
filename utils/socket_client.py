@@ -1,8 +1,13 @@
 import socket
-from data_model import Status
+from data_model import Status, HttpResponse
+
+# Debug Only
+# import logging, traceback
+# logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 class SocketClient:
-    def __init__(self, host, port, timeout=0.5):
+    def __init__(self, host, port, timeout=0.8):
         self.host = host
         self.port = port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -41,7 +46,8 @@ class SocketClient:
             self.client_socket.close()
         return buffer
 
-def request_for_response(host, port, request_text, timeout=0.5, byte_encode=False):
+
+def request_for_response(host, port, request_text, timeout=0.8, byte_encode=False):
     response = ""
     try:
         client = SocketClient(host, port, timeout=timeout)
@@ -53,6 +59,10 @@ def request_for_response(host, port, request_text, timeout=0.5, byte_encode=Fals
             response = ''.join(responses)
         else:
             response = b''.join(responses)
+        response_obj = HttpResponse.parse(response)
     except Exception as e:
-        return "", Status.TLE if str(e) == "timed out" else Status.RE
-    return response, Status.AC
+        print(f"Exception occurred: {e}.\nRequest text: \n{request_text}\n. Response text: \n{response}\n.")
+        # Debug Only
+        # logging.error(f"Request text: \n{request_text}\n. Response text: \n{response}\n. Traceback: \n{traceback.format_exc()}")
+        return None, Status.TLE if str(e) == "timed out" else Status.RE
+    return response_obj, Status.AC

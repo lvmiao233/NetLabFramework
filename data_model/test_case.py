@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, Callable
-import time
+import time as timer
 import threading
+
 from .test_status import Status
 
 
@@ -16,17 +17,24 @@ class Case:
     name: Optional[str] = None
     run_function: Optional[Callable[..., Status]] = None
     params: Optional[dict] = None
-    timeout: float = 0.5  # 默认超时时间，单位：秒
+    timeout: float = 1  # 默认超时时间，单位：秒
+    duplicate: int = 0
 
     def run(self) -> None:
         if self.run_function:
-            start_time = time.time()
+            if self.status != Status.AC and self.duplicate > 0:
+                return
             thread = threading.Thread(target=self._run_function)
+            start_time = timer.time()
             thread.start()
             thread.join(timeout=self.timeout)
+            elapsed_time = timer.time() - start_time
             if thread.is_alive():
                 self.status = Status.TLE
-            self.time = time.time() - start_time
+            else:
+                self.duplicate += 1
+                self.time = 0 if self.time is None else self.time
+                self.time = (self.time * (self.duplicate - 1) + elapsed_time) / self.duplicate
 
     def _run_function(self) -> None:
         try:
