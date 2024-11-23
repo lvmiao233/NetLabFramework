@@ -138,7 +138,6 @@ class HttpResponse:
 
     @classmethod
     def parse(cls, response_text) -> 'HttpResponse':
-        prev_text = response_text
         if isinstance(response_text, str):
             # If input is a string, encode it to bytes
             response_text = response_text.encode('utf-8')
@@ -152,13 +151,7 @@ class HttpResponse:
         header_content = b'\r\n'.join(header_lines[1:]).decode('ascii')
 
         # Parse the status line to extract version and status
-        prev_line = status_line
-        try:
-            version, status = status_line.split(' ', 1)
-        except Exception as e:
-            print(f"line: {prev_line}")
-            print(f"full: {prev_text}")
-            raise
+        version, status = status_line.split(' ', 1)
 
 
         # Use email.parser to parse the headers
