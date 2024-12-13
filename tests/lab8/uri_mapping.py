@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from requests.structures import CaseInsensitiveDict
 from data_model import Case, Test, Status, HttpResponse
 from utils import generate_http_request, request_for_response
@@ -32,11 +31,12 @@ def post_match(host, port, external_uri, internal_uri, body):
     response, send_state = request_for_response(host, port, request_text)
     if send_state != Status.AC:
         return send_state
+    status_code = response.status.split()[0]  # 提取响应码
 
     if internal_uri is None:
-        return Status.AC if response.status == "404 Not Found" else Status.WA
+        return Status.AC if status_code == "404" else Status.WA
     else:
-        return Status.AC if response.status == "200 OK" else Status.WA
+        return Status.AC if status_code == "200" else Status.WA
 
 
 def uri_mapping_test(host, port) -> Test:
