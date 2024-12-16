@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Callable
 import time as timer
-import threading
+import threading, traceback
 
 from .test_status import Status
 
@@ -44,6 +44,9 @@ class Case:
                 self.status = self.run_function()
         except Exception as e:
             self.status = Status.RE
+            if self.name is not None and self.name != "":
+                print(self.name)
+            print(f" Exception occurred:\n{traceback.format_exc()}")
 
     def update_status(self, status: Status, run_time: Optional[float] = None) -> None:
         self.status = status
